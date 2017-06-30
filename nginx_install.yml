@@ -1,0 +1,63 @@
+---
+- hosts: vagrant
+  become: true
+  vars:
+    doc_root: /var/www/project
+    nginx_sites: /etc/nginx/sites-available
+    conf_file: yoursite.com
+  tasks:
+    - name: Update apt
+      apt: update_cache=yes
+
+    - name: Install nginx
+      apt:
+        name=nginx
+        state=latest
+
+    - name: Install php7.0
+      apt:
+        name={{ item }}
+        state=latest
+      with_items:
+        - php-fpm
+        - php-mysql
+        - php-mbstring
+        - php-mcrypt
+
+    - name: Create custom document root
+      file:
+        path={{ doc_root }}
+        state=directory
+        owner=www-data
+        group=www-data
+
+    - name: Create HTML file
+      copy:
+        src=index.php dest={{ doc_root }}/index.php
+        owner=www-data
+        group=www-data mode=0644
+
+    - name: Delete default nginx vhost
+      file:
+        path={{ nginx_sites }}/default
+        state=absent
+
+    - name: Delete default nginx vhost symlink
+      file: path=/etc/nginx/sites-enabled/default state=absent
+
+    - name: Setup nginx vhost
+      template:
+        src=nginx.tpl
+        dest={{ nginx_sites }}/{{ conf_file }}.conf
+
+    - name: Create symlink nginx vhost
+      file:
+        src={{ nginx_sites }}/{{ conf_file }}.conf
+        dest=/etc/nginx/sites-enabled/{{ conf_file }}.conf
+        state=link
+      notify: restart nginx
+  handlers:
+    - name: restart nginx
+      service:
+        name=nginx
+        state=restarted

@@ -1,0 +1,8 @@
+[vagrant]
+
+192.168.33.10 ansible_user=ubuntu
+
+[app]
+
+ec2-xxx-xxx-xxx-xxx.eu-west-1.compute.amazonaws.com ansible_user=ubuntu
+ec2-xxx-xxx-xxx-xxx.eu-west-1.compute.amazonaws.com ansible_user=ubuntu
