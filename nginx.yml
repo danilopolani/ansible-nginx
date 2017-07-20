@@ -2,12 +2,17 @@
 - hosts: app
   become: true
   vars:
-    nginx_sites: /etc/nginx/sites-available
+    nginx_path: /etc/nginx
+    nginx_sites: {{ nginx_path }}/sites-available
   tasks:
     - name: Setup nginx vhost
       template:
-        src=nginx.tpl
+        src=yoursite.com.conf.tpl
         dest={{ nginx_sites }}/yoursite.com.conf
+    - name: Setup nginx conf
+      template:
+        src=nginx.conf.tpl
+        dest={{ nginx_path }}/nginx.conf
       notify: restart nginx
   handlers:
     - name: restart nginx
