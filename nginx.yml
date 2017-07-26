@@ -3,7 +3,7 @@
   become: true
   vars:
     nginx_path: /etc/nginx
-    nginx_sites: {{ nginx_path }}/sites-available
+    nginx_sites: /etc/nginx/sites-available
   tasks:
     - name: Setup nginx vhost
       template:
